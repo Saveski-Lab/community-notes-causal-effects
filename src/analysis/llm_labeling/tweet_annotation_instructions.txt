@@ -1,0 +1,1 @@
+Please annotate the tweet below using the following schema. It is okay if you cannot view photos, videos, or links from the tweet, but please do your best to interpret the text and any available context. Ensure that your response ends with a correctly formatted JSON containing all requested columns. Make sure that you do not include any other text after the JSON.

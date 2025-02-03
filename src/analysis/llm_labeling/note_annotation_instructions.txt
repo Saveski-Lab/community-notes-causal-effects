@@ -1,0 +1,8 @@
+The data below shows a tweet along with a note written to contextualize the tweet.
+
+First, please describe the implicit messages readers might take away after reading the tweet. Try to consider a large variety of reader backgrounds, beliefs, and attention levels, and note that the messages may be contradictory, overlapping, or unrelated, depending on the tweet and the reader.
+
+Second, describe how deeply the note engages with each implicit messages. Does the note question the evidence for a message, while leaving some evidence (potentially unspoken) intact and the message therefore still credible? Does it negate all plausible evidence for the message? Does the note have the same effect for all, or only speak to some of the messages?
+
+After this analysis, annotate the data using the schema provided. Ensure that your response ends with a correctly formatted JSON containing all requested columns. Make sure that you do not include any other text after the JSON.
+

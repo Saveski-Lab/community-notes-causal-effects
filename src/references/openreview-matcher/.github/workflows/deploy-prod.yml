@@ -1,0 +1,44 @@
+# This workflow deploys the master brance to the live site
+
+name: prod-deployment
+
+# Controls when the workflow will run
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+jobs:
+  deploy:
+    # Allow the job to fetch a GitHub ID token
+    permissions:
+      id-token: write
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Add SSH key
+        run: |
+          mkdir -p /home/runner/.ssh
+          echo "${{ secrets.GCLOUD_SSH_KEY }}" > /home/runner/.ssh/google_compute_engine
+          echo "${{ secrets.GCLOUD_SSH_KEY_PUB }}" > /home/runner/.ssh/google_compute_engine.pub
+          chmod 600 /home/runner/.ssh/google_compute_engine
+          chmod 600 /home/runner/.ssh/google_compute_engine.pub
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          skip_install: true           
+      - name: Authenticate with Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v1
+        with:
+          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          create_credentials_file: true
+          cleanup_credentials: true
+          export_environment_variables: true
+      - name: Install Google Cloud
+        uses: google-github-actions/setup-gcloud@v1
+      - name: Run deploy script
+        run: |
+          gcloud config set compute/zone us-central1-c
+          gcloud compute ssh openreview@instance-matching-server --command '/bin/matcher_build.sh' --quiet

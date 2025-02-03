@@ -1,0 +1,139 @@
+{
+  "type": "object",
+  "properties": {
+    "timely": {
+      "type": "string",
+      "enum": [
+        "yes",
+        "no"
+      ],
+      "description": "Indicates if content conveys information about a recent or upcoming event"
+    },
+    "positive_sentiment": {
+      "type": "string",
+      "enum": [
+        "yes",
+        "no"
+      ],
+      "description": "Indicates if the content expresses positive emotion or energy, including excitement and enthusiasm. Considers both the content and any punctuation that emphasizes positive emotion."
+    },
+    "negative_sentiment": {
+      "type": "string",
+      "enum": [
+        "yes",
+        "no"
+      ],
+      "description": "Indicates if the content expresses negative emotion or energy, including lack of excitement or enthusiasm. Considers both the content and any punctuation that emphasizes positive emotion."
+    },
+    "contains_alleged_fact": {
+      "type": "string",
+      "enum": [
+        "yes",
+        "no"
+      ],
+      "description": "Indicates if content makes at least one factual assertion"
+    },
+    "promotion": {
+      "type": "string",
+      "enum": [
+        "yes",
+        "no"
+      ],
+      "description": "Indicates if content directly promotes a business, service, product, or industry"
+    },
+    "presented_emotionally": {
+      "type": "string",
+      "enum": [
+        "yes",
+        "no"
+      ],
+      "description": "Indicates if content contains emotional language, syntactic structures, punctuation, or other elements"
+    },
+    "subjective": {
+      "type": "string",
+      "enum": [
+        "yes",
+        "no"
+      ],
+      "description": "Indicates presence of linguistic expressions of private states. This includes lexical elements (e.g., 'stand in awe', 'fascinated', 'complains'), syntactic devices (fronting, parallelism), morphological devices, or complex expressions that convey personal opinions, feelings, or judgments."
+    },
+    "topic": {
+      "type": "string",
+      "enum": [
+        "politics",
+        "health",
+        "economy",
+        "science",
+        "tech",
+        "celebrity",
+        "unknown"
+      ],
+      "description": "The primary topic category. The topic 'politics' concerns tweets that are political and that also do not fall into the 'health', 'economy' or 'science' topics. The topic 'celebrity' concerns people unrelated to other categories. The category 'unknown' indicates the topic is unclear."
+    },
+    "partisan_lean": {
+      "type": "string",
+      "enum": [
+        "left",
+        "right",
+        "center",
+        "unknown",
+        "none"
+      ],
+      "description": "The political leaning of the tweet content. The category 'unknown' indicates the political leaning is unclear, and 'none' indicates the content is not political."
+    },
+    "misleading_type": {
+      "type": "string",
+      "enum": [
+        "misleadingFactualError",
+        "misleadingManipulatedMedia",
+        "misleadingOutdatedInformation",
+        "misleadingMissingImportantContext",
+        "misleadingUnverifiedClaimAsFact",
+        "misleadingSatire",
+        "notMisleading"
+      ],
+      "description": "The type of misleading information present in the tweet."
+    },
+    "tweet_point_clarity": {
+      "type": "string",
+      "enum": [
+        "high",
+        "medium",
+        "low"
+      ],
+      "description": "Identifies the clarity with which the tweet's underlying point has been communicated."
+    },
+    "tweet_uses_conspiratorial_thinking": {
+      "type": "string",
+      "enum": [
+        "yes",
+        "no"
+      ],
+      "description": "Identifies whether the tweet uses conspiratorial thinking."
+    },
+    "tweet_uses_hate_speech": {
+      "type": "string",
+      "enum": [
+        "yes",
+        "no"
+      ],
+      "description": "Identifies whether the tweet uses hate speech."
+    },
+    "tweet_uses_vulgar_language": {
+      "type": "string",
+      "enum": [
+        "yes",
+        "no"
+      ],
+      "description": "Identifies whether the tweet uses vulgar language."
+    },
+    "tweet_is_believable": {
+      "type": "string",
+      "enum": [
+        "yes",
+        "no"
+      ],
+      "description": "Identifies whether the claims made by the tweet are believable at face value."
+    }
+  }
+}

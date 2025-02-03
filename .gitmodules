@@ -1,0 +1,6 @@
+[submodule "src/references/openreview-matcher"]
+	path = src/references/openreview-matcher
+	url = https://github.com/openreview/openreview-matcher.git
+[submodule "src/references/headline-parser"]
+	path = src/references/headline-parser
+	url = https://github.com/davidmcclure/headline-parser

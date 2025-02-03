@@ -1,0 +1,89 @@
+## Tweets:
+1) Sample 30 English language tweets
+2) Manually annotate the below, although these will be done inductively.
+    a) Sentiment: High Positive, High Negative vs Low Negative, based on instructions https://onlinelibrary.wiley.com/doi/epdf/10.1002/asi.21416
+    b) Subjectivity: High, Medium Low. Subjective means "Subjective sentences are sentences that express or describe opinions, evaluations, or emotions"—https://nlp.cs.utah.edu/publications/pdfs/riloff2005exploiting.pdf#page=1.44
+    Sentences can be obviously subjective (high) if they clearly express opinions, evaluations, or emotions. Sentences can be obviously objective (low) if they clearly express facts, and do not use language that is emotional. Sentences can be ambiguous (medium) if they express both facts and opinions, evaluations, or emotions (or neither), or they contain language that is emotional but do not clearly express opinions, evaluations, or emotions.
+    c) Controversy: High, Low: Using definitions "Many of these issues are controversial, in the sense that they provoke arguments in which people express strong opposing opinions" - https://arxiv.org/pdf/1409.8152 "Intuitively, if people hotly debate an entity in a given period of time, there is a good chance of a controversy occurring"—https://aclanthology.org/W10-0516.pdf
+    d) Dominant Basic Emotion: sadness, happiness, fear, anger, surprise and disgust
+    e) Topic: Starting with topics Politics, (ii) Health, (iii) Economy,  (iv) Science, (from http://arxiv.org/abs/2409.08781) but will code inductively
+3) Came out of initial 30 with the following schema:
+    a) timely:
+        yes: This conveys at least one piece of information about a recent or upcoming event
+        no: This does not convey any information about a recent or upcoming event
+    b) positive sentiment:
+        yes: This conveys positive emotion or energy
+        no: This does not convey positive emotion or energy
+    c) negative sentiment:
+        yes: This conveys positive emotion or energy
+        no: This does not convey positive emotion or energy
+    d) contains_alleged_fact:
+        yes: Makes at least one factual assertion
+        no: Does not contain any factual assertions
+    e) promotion
+        yes: Directly promotes a business, service, product, or industry
+        no: Does not promote a business, service, product, or industry, or only does so indirectly
+    f) presented emotionally:
+        yes: Tweet contains emotional language, syntactic structures, punctuation, or other elements
+        no: This is not presented in an emotional way
+    g) subjective:
+        Using the definition below, does the text convey a subjective element? "Subjective elements are linguistic expressions of private states in context. Subjective elements are often lexical (examples are stand in awe, unceasingly, fascinated in (3) and eroding, sapping, and complains in (5)). They may be single words (e.g., complains) or more complex expressions (e.g., stand in awe, what a NP). Purely syntactic or morphological devices may also be subjective elements (e.g., fronting, parallelism, changes in aspect)."
+        yes: The text contains subjective elements
+        no: The text does not contain subjective elements
+    d) topic:
+        politics
+        health
+        economy
+        science
+        technology
+        celebrity (must be unrelated to other categories) (Bringing this in not because I saw it in the 30 tweets, but because I've seen in prior explorations of what gets noted.)
+        unknown (if the topic is not clear)
+4) Used google-ai-studio to come up with schema to label (tweet_annotation_schema.json).
+5) Labeled all 30 samples with gemini pro/flash.
+6) Realized I should also probably include partisan lean for political tweets, so adding that to the schema. (e.g. see https://doi.org/10.1080/10584609.2019.1668894)
+
+
+## Notes:
+1) Sample notes for the above 30 English language tweets
+2) Looked through tweet/note combos and inductively came up with the schema below:
+Inductive categories
+* Readable to a 5th grader?
+* Convincing to a 5th grader?
+* Does it comprehensively refute the claim made it in the tweet?
+* What evidence is used in the tweet?
+* What warrant is used in the tweet?
+* What claim is made by the tweet?
+* How easy to verify (or open to debate) are the claims in the note?
+* how confrontational? 
+* What parts of argument does the note address?
+3) Brought in external references
+From https://doi.org/10.1080/10584609.2019.1668894, want to label:
+* Length of note (already done)
+* Complexity of fact check
+* What is being refuted (entire claim, or just part of it)
+* Partisan lean of note
+
+From https://aclanthology.org/D16-1129 want to label:
+* Does the note address both positive properties of the tweet, or only negative properties?
+* What properties of the tweet does the note address? (language/presentation, content, or a general remark) -> Not using, as all notes seem to be about content.
+* What category does the note best fit into? -> Not using as I'm going to use the note rating categories.
+    * language/presentation: tweet is attacking/abusive
+    * language/presentation: tweet has language issues/bad grammar/uses humor, jokes or sarcasm
+    * language/presentation: tweet is unclear and hard to follow
+    * content: tweet provides no facts/not enough support/no credible evidence, or no clear explanation
+    * content: tweet has insufficient reasoning
+    * content: tweet uses irrelevant reasons/irrelevant information
+    * general remark: tweet is not an argument, but is only an opinion or rant
+    * general remark: tweet is off-topic or doesn't address the issue
+    * general remark: tweet is generally weak/vague
+
+From https://dl.acm.org/doi/10.1145/3555210 want to label:
+* Does the note use logos? Logos is a persuasive strategy that uses facts, logic, or reasoning to persuade people, such as presenting statistical results or giving logical explanations.
+* Does the note use pathos? Pathos is a persuasive strategy that persuades people by arousing their emotions, such as telling a personal story or using emotional expressions.
+* Does the note use ethos? Ethos is a persuasive strategy that builds the speaker’s credibility by sharing some professional experiences or using credible sources for persuasion.
+* Does the note use evidence? Evidence is a persuasive strategy that describes a concrete example. Noted that evidence refers to the practical experience that has happened, which is not required in “logos”, “pathos”, and ethos. For example, "If it is so much trouble to get dates, maintain a relationship, and not be yourself, why are you still chasing these goals" belongs to logos but not evidence.
+-> Not using these for the notes as I think the notes are all pretty logos based.
+
+4) Condense into a single schema (note_annotation_schema.json)
+5) Label all 30 samples by hand
+6) Spent a lot of time going back and forth with chatbots to get the schema for the notes right. I'm having a bit of trouble with the column that I want to capture the extent to which the note refutes the tweet.

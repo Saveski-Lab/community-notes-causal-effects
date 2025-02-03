@@ -1,0 +1,148 @@
+channels:
+- conda-forge
+- defaults
+- pytorch
+dependencies:
+- bottleneck=1.3.8
+- dask=2024.5.1
+- fastparquet=2023.10.1
+- joblib=1.3.2
+- netcdf4=1.6.5
+- numba=0.59.0
+- numpy=1.26.4
+- pandas=2.2.0
+- pip=23.3.2
+- pyarrow=14.0.2
+- python=3.10.13
+- pytorch=2.1.2
+- qpsolvers=4.3.1
+- scipy=1.11.4
+- seaborn=0.13.1
+- tqdm=4.66.1
+- xarray=2024.2.0
+- pip:
+  - absl-py==2.1.0
+  - amqp==5.2.0
+  - annotated-types==0.7.0
+  - anyio==4.3.0
+  - beautifulsoup4==4.12.3
+  - billiard==3.6.4.0
+  - black==24.1.0
+  - blis==0.7.11
+  - boltons==24.0.0
+  - catalogue==2.0.10
+  - celery==5.2.7
+  - cffi==1.16.0
+  - cfgv==3.4.0
+  - charset-normalizer==3.3.2
+  - clarabel==0.6.0
+  - click-didyoumean==0.3.1
+  - click-plugins==1.1.1
+  - click-repl==0.3.0
+  - cloudpathlib==0.18.1
+  - cmdstanpy==1.2.2
+  - confection==0.1.5
+  - cymem==2.0.8
+  - deap==1.4.1
+  - deprecated==1.2.14
+  - distlib==0.3.8
+  - docutils==0.20.1
+  - exceptiongroup==1.2.0
+  - filelock==3.13.4
+  - flake8==3.8.4
+  - flask==2.2.2
+  - flask-cors==3.0.10
+  - future==1.0.0
+  - gunicorn==19.10.0
+  - gurobipy==10.0.1
+  - h11==0.14.0
+  - holidays==0.49
+  - identify==2.5.36
+  - idna==3.6
+  - immutabledict==4.2.0
+  - importlib-metadata==4.2.0
+  - importlib-resources==6.4.0
+  - iniconfig==2.0.0
+  - itsdangerous==2.2.0
+  - jedi==0.19.1
+  - kombu==5.3.7
+  - langcodes==3.4.0
+  - language-data==1.2.0
+  - loguru==0.7.2
+  - lxml==5.2.1
+  - marimo==0.8.22
+  - marisa-trie==1.2.0
+  - markdown==3.5.2
+  - markdown-it-py==3.0.0
+  - mccabe==0.6.1
+  - mdurl==0.1.2
+  - murmurhash==1.0.10
+  - mypy-extensions==1.0.0
+  - nodeenv==1.8.0
+  - openreview-matcher==1.0
+  - openreview-py==1.39.1
+  - orjson==3.10.4
+  - ortools==9.9.3963
+  - parso==0.8.3
+  - pathspec==0.12.1
+  - platformdirs==4.2.0
+  - pluggy==1.5.0
+  - potato-annotation==1.2.2.4
+  - pre-commit==2.21.0
+  - preshed==3.0.9
+  - prompt-toolkit==3.0.43
+  - prophet==1.1.5
+  - protobuf==5.26.1
+  - pycodestyle==2.6.0
+  - pycparser==2.22
+  - pycryptodome==3.20.0
+  - pycsp3==2.3.1
+  - pydantic==2.8.2
+  - pydantic-core==2.20.1
+  - pyflakes==2.2.0
+  - pygments==2.17.2
+  - pyjwt==2.8.0
+  - pylatexenc==2.10
+  - pymdown-extensions==10.7
+  - pyreadr==0.5.0
+  - pytest==7.4.4
+  - redis==3.5.3
+  - requests==2.31.0
+  - rich==13.7.1
+  - ruff==0.6.8
+  - scikit-learn==1.5.0
+  - scikit-mdr==0.4.5
+  - setuptools==65.5.1
+  - shellingham==1.5.4
+  - simpledorff==0.0.2
+  - skrebate==0.62
+  - smart-open==7.0.4
+  - sniffio==1.3.1
+  - soupsieve==2.6
+  - spacy==3.7.5
+  - spacy-legacy==3.0.12
+  - spacy-loggers==1.0.5
+  - srsly==2.4.8
+  - stanio==0.5.0
+  - starlette==0.37.2
+  - stopit==1.1.2
+  - thinc==8.2.5
+  - tld==0.13
+  - tomli==2.0.1
+  - tomlkit==0.12.3
+  - tpot==0.12.2
+  - typer==0.12.3
+  - typing-extensions==4.9.0
+  - ujson==5.10.0
+  - update-checker==0.18.0
+  - uvicorn==0.29.0
+  - vine==5.1.0
+  - virtualenv==20.26.0
+  - wasabi==1.1.3
+  - wcwidth==0.2.13
+  - weasel==0.4.1
+  - websockets==12.0
+  - werkzeug==2.3.7
+  - wrapt==1.16.0
+  - xgboost==2.0.3
+name: cn-effect

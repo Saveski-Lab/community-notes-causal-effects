@@ -1,0 +1,20 @@
+# Don't track artifacts
+*/a_preprocess*/*.csv
+
+# Make sure to Track logs
+!cn_effect_intermediate_dev/**/*.log
+!cn_effect_intermediate_prod/**/*.log
+
+# Main data files
+*.parquet
+*.json.gz
+
+# PyCharm
+.idea/
+
+# os
+*.DS_Store
+
+# Potato user configs w/ hashed pwds
+/src/analysis/volatile_tweet_labeling_round_1/user_config.json
+/src/analysis/volatile_tweet_labeling_round_2/user_config.json

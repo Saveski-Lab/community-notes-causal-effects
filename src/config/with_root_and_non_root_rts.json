@@ -1,0 +1,56 @@
+{
+  "title": "With Root/Non-Root RTs",
+  "dev": true,
+  "use_backup_tweets": false,
+  "use_bookmark_tweets": false,
+  "volatile_tweet_filtering": "min_max_filter_25_3",
+  "time_freq": "0.25h",
+  "max_date": "2023-06-24 00:00:00+0000",
+  "pre_break_min_time": "1h",
+  "pre_break_max_time": "12h",
+  "post_break_min_time": "48h",
+  "pre_break_bias_correction_time": "1h",
+  "train_backdate": "0h",
+  "val_backdate": "0h",
+  "val2_backdate": "0h",
+  "matching_metrics": [
+    "likes",
+    "impressions",
+    "calculated_retweets",
+    "calculated_replies",
+    "author_n_followers",
+    "rt_cascade_depth",
+    "rt_cascade_width",
+    "rt_cascade_wiener_index"
+  ],
+  "replace_calculated_when_missing": true,
+  "missing_metric_action": "drop_metric",
+  "weighting_strategy": "unweighted",
+  "standardize_when_calculating_weights": true,
+  "target_metrics": [
+    "likes",
+    "impressions",
+    "calculated_retweets",
+    "calculated_replies",
+    "rt_cascade_width",
+    "rt_cascade_depth",
+    "rt_cascade_wiener_index",
+    "calculated_replies_per_impression",
+    "calculated_retweets_per_impression",
+    "rt_cascade_num_nodes_root_tweet",
+    "rt_cascade_num_nodes_non_root_tweet"
+  ],
+  "include_permutations": false,
+  "lambda": [
+    0
+  ],
+  "include_bias_correction": true,
+  "restrict_donor_pool":  true,
+  "restricted_pool_size": 1000,
+  "bias_correction_model": "lm",
+  "bias_correction_missing_actions": [
+    "replace_calculated",
+    "impute_na_predictors"
+  ],
+  "sample_bias_correction_controls": 100
+}

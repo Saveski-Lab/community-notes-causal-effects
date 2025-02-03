@@ -1,0 +1,118 @@
+{
+  "type": "object",
+  "properties": {
+    "reading_speed": {
+      "type": "string",
+      "description": "Identifies the speed with which the note can be read.",
+      "enum": [
+        "GLANCE",
+        "QUICK",
+        "SLOW"
+      ]
+    },
+    "lexical_complexity": {
+      "type": "int",
+      "description": "Identifies the lexical complexity of the note. Lexically complex text involves lexical sophistication, variation, density, and vocabulary errors",
+      "enum": [
+        "VERY_COMPLEX",
+        "COMPLEX",
+        "MODERATE",
+        "SIMPLE",
+        "VERY_SIMPLE"
+      ]
+    },
+    "comprehensibility": {
+      "type": "string",
+      "description": "Identifies the ease with which the note conveys the change in implicit message to the reader. Considers how much cognitive effort and attention the refutation made by the note is to understand and whether the note can be quickly grasped or needs careful, focused reading to process",
+      "enum": [
+        "VERY_EASY",
+        "EASY",
+        "MODERATE",
+        "DIFFICULT",
+        "VERY_DIFFICULT"
+      ]
+    },
+    "verifiability": {
+      "type": "string",
+      "description": "Identifies the ease with which the central assertions in the note can be verified.",
+      "enum": [
+        "VERY_EASY",
+        "EASY",
+        "MODERATE",
+        "DIFFICULT",
+        "VERY_DIFFICULT"
+      ]
+    },
+    "note_partisan_lean": {
+      "type": "string",
+      "enum": [
+        "LIBERAL",
+        "CONSERVATIVE",
+        "UNKNOWN",
+        "NONE"
+      ],
+      "description": "The apparent political orientation expressed in the note's content and argumentation style, if any is detectable."
+    },
+    "implicit_message_impact": {
+      "type": "string",
+      "description": "Indicates how the implicit messages of the tweet are affected after being contextualized by the note.",
+      "enum": [
+        {
+          "value": "NO_EFFECT",
+          "description": "The note does not alter the implicit messages or evidence; they remain intact."
+        },
+        {
+          "value": "EVIDENCE_NEGATED_ONLY",
+          "description": "The note negates only the evidence supporting the implicit messages, but the messages themselves remains unaffected."
+        },
+        {
+          "value": "ANCILLARY_MESSAGES_NEGATED",
+          "description": "The note negates all plausible evidence of secondary or supporting implicit messages, but not the central one."
+        },
+        {
+          "value": "CENTRAL_MESSAGE_NEGATED",
+          "description": "The note negates all plausible evidence of the main implicit message of the tweet, but leaves others intact."
+        },
+        {
+          "value": "ALL_MESSAGE_NEGATED",
+          "description": "The note negates plausible evidence of all likely messages from the tweet."
+        }
+      ]
+    },
+    "note_claims_scam": {
+      "type": "string",
+      "description": "Identifies whether the note asserts that the tweet is related to a scam. Only refers to the assertions made by the note, rather than the content of the tweet.",
+      "enum": [
+        "YES",
+        "NO"
+      ]
+    },
+    "note_claims_engagement_bait": {
+      "type": "string",
+      "description": "Identifies whether the note asserts that the tweet attempts to manipulate likes, shares, or other interactions through deceptive means. Only refers to the assertions made by the note, rather than the content of the tweet.",
+      "enum": [
+        "YES",
+        "NO"
+      ]
+    },
+    "note_claims_altered_media": {
+      "type": "string",
+      "description": "Identifies whether note asserts that tweet contains an altered photo, video, gif, or other media component. Only refers to the assertions made by the note, rather than the content of the tweet.",
+      "enum": [
+        "YES",
+        "NO"
+      ]
+    },
+    "adversarial_or_collaborative": {
+      "type": "string",
+      "description": "Identifies the extent to which the note takes a collaborative, diplomatic, civil, tactful, and/or helpful tone versus a confrontational, adversarial, antagonistic, critical and/or aggressive tone toward the tweet.",
+      "enum": [
+        "COLLABORATIVE",
+        "SOMEWHAT_COLLABORATIVE",
+        "NEUTRAL",
+        "SOMEWHAT_ADVERSARIAL",
+        "ADVERSARIAL"
+      ]
+    }
+  }
+}

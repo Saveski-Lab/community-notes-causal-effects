@@ -1,0 +1,1 @@
+This directory contains labeling logs for annotation of tweets as being "volatile"—those with precipitous drops and/or rises in engagement metrics that we suspected may be related to ETL issues on the X backend. 
