@@ -12,8 +12,7 @@ from tqdm import tqdm
 # Add current directory to path for imports
 sys.path.append(str(Path(__file__).resolve().parents[2]))
 
-from src.utils import camel_to_snake, informative_merge, remove_urls
-from src.pipeline.a_preprocess import local_data_root, shared_data_root
+from src.utils import camel_to_snake, informative_merge, remove_urls, local_data_root, shared_data_root
 from src.analysis.plot_treatment_effects import get_artifact_dir
 from src.analysis.lexicon_based_labeling.readability import measure_readability
 from src.analysis.lexicon_based_labeling.lexicon_labeling import (

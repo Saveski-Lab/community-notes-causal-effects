@@ -1,6 +1,6 @@
 import json
 
-from src.pipeline.a_preprocess import shared_data_root
+from src.utils import shared_data_root
 
 def read_lexicon(fpath):
     lexicon = set([])

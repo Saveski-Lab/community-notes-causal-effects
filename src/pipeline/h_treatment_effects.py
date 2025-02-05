@@ -31,9 +31,8 @@ from src.utils import (
     ConfigError,
     check_run_type,
     read_from_table,
-    clear_and_write, read_weights, read_control_configs, combine_sequence,
+    clear_and_write, read_weights, read_control_configs, combine_sequence, local_data_root,
 )
-from src.pipeline.a_preprocess import local_data_root
 from src.pipeline.c_find_controls import (
     metric_parents,
     read_trt_and_ctrl,

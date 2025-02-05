@@ -20,8 +20,7 @@ from scipy.stats import gmean, norm
 # Add current directory to path for imports
 sys.path.append(str(Path(__file__).resolve().parents[2]))
 
-from src.utils import ConfigError, read_weights, read_control_configs
-from src.pipeline.a_preprocess import local_data_root
+from src.utils import ConfigError, read_weights, read_control_configs, local_data_root
 from src.pipeline.c_find_controls import (
     metric_parents,
     tweet_level_datasets,

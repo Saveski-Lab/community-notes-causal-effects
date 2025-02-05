@@ -9,9 +9,8 @@ from src.utils import (
     get_logger,
     ConfigError,
     check_run_type,
-    informative_merge, read_weights, read_control_configs,
+    informative_merge, read_weights, read_control_configs, local_data_root,
 )
-from src.pipeline.a_preprocess import local_data_root
 from src.pipeline.c_find_controls import (
     metric_parents,
     read_trt_and_ctrl,

@@ -18,10 +18,9 @@ from src.utils import (
     check_run_type,
     clear_and_write,
     read_from_table,
-    ConfigError,
+    ConfigError, local_data_root,
 )
 from src.pipeline.a_preprocess import (
-    local_data_root,
     structural_metrics_keys,
 )
 

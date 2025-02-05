@@ -16,14 +16,13 @@ from tqdm import tqdm
 # Add current directory to path for imports
 sys.path.append(str(Path(__file__).resolve().parents[2]))
 
-from src.pipeline.a_preprocess import local_data_root, shared_data_root
 from src.utils import (
     save_environment,
     get_logger,
     check_run_type,
     clear_and_write,
     ConfigError,
-    read_from_table,
+    read_from_table, local_data_root, shared_data_root,
 )
 
 # This script takes in the merged data. For each treatment tweet, it creates a json that

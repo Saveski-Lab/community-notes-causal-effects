@@ -24,17 +24,14 @@ from src.utils import (
     check_run_type,
     clear_and_write,
     ConfigError,
-    json_gzip_reader,
+    json_gzip_reader, local_data_root, shared_data_root,
 )
 
 ########################################################################################################################
 # Paths, which will need to be set in your environment
 
-local_data_root = Path(os.getenv("BW_LOCAL_DATA_ROOT"))
-
 input_data_dir = local_data_root / "cn_effect_input"
 
-shared_data_root = Path(os.getenv("BW_SHARED_DATA_ROOT"))
 
 full_pipeline_db_export_dir = (
     shared_data_root / "database" / "db-export-apr-1-2024" / "birdwatch"
@@ -173,10 +170,10 @@ class CreationTimeRetriever(object):
 
         # Open file
         with gzip.open(
-            local_data_root
-            / "cn_effect_input"
-            / "bw-tweets"
-            / "tweet_objects_v1_api_05_05_2023.json.gz",
+                local_data_root
+                / "cn_effect_input"
+                / "bw-tweets"
+                / "tweet_objects_v1_api_05_05_2023.json.gz",
             "r",
         ) as fin:
             # Each line in file contains a separate json, so iterate through
@@ -197,10 +194,10 @@ class CreationTimeRetriever(object):
     def load_web_tweets_objects(self):
         # Read web_tweets_objects.json.gz
         with gzip.open(
-            local_data_root
-            / "cn_effect_input"
-            / "bw-tweets"
-            / "web_tweets_objects.json.gz",
+                local_data_root
+                / "cn_effect_input"
+                / "bw-tweets"
+                / "web_tweets_objects.json.gz",
             "r",
         ) as fin:
             loaded = json.loads(fin.read())
@@ -489,10 +486,10 @@ class TweetSnapshotProcessor:
             [f"in_{tweet_name}" for _, tweet_name in self.tweet_stores]
         ).size()
         contingency_table_path = (
-            local_data_root
-            / intermediate_dir
-            / artifact_dir
-            / "a_tweet_sources_contingency_table.csv"
+                local_data_root
+                / intermediate_dir
+                / artifact_dir
+                / "a_tweet_sources_contingency_table.csv"
         )
         contingency_table.to_csv(contingency_table_path)
 
@@ -2378,9 +2375,9 @@ class CalculatedMetricsProcessor:
         for metric_name in ["replies", "retweets"]:
             # Get path
             output_path = (
-                local_data_root
-                / intermediate_dir
-                / f"a_calculated_{metric_name}.parquet"
+                    local_data_root
+                    / intermediate_dir
+                    / f"a_calculated_{metric_name}.parquet"
             )
 
             # Save

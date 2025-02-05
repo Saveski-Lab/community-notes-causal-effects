@@ -12,7 +12,7 @@ from tqdm import tqdm
 # Add current directory to path for imports
 sys.path.append(str(Path(__file__).resolve().parents[2]))
 
-from src.pipeline.a_preprocess import local_data_root
+from src.utils import local_data_root
 
 PERMISSIVE_PCT_CUTOFF = 0.01
 PERMISSIVE_ABS_CUTOFF = 10
