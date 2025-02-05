@@ -6,7 +6,7 @@ app = marimo.App()
 
 @app.cell
 def __(mo):
-    mo.md("# Calculate Statistics Used in Paper")
+    mo.md("""# Calculate Statistics Used in Paper""")
     return
 
 
@@ -40,8 +40,9 @@ def __(__file__):
     sys.path.append(str(Path(__file__).resolve().parents[2]))
 
     from src.analysis.plotting_utils import MetricFormatter, INDIVIDUAL_LINE_WIDTH
-
     from src.analysis.colors import colors as analysis_colors
+    from src.utils import read_weights
+
     return (
         INDIVIDUAL_LINE_WIDTH,
         MetricFormatter,
@@ -60,6 +61,7 @@ def __(__file__):
         plt,
         rcParams,
         re,
+        read_weights,
         sem,
         sns,
         sys,
@@ -876,24 +878,111 @@ def __(mo):
 
 
 @app.cell
-def __(Path, config):
-    from src.pipeline.g_compare_weights import read_weights, read_control_configs
-    control_configs = read_control_configs(
-        Path("cn_effect_intermediate_prod"),
-        config,
-    )
-    return control_configs, read_control_configs, read_weights
+def __(tid_missingness):
+    tid_missingness[["treatment","metric","ever_available"]].value_counts(dropna=False).reset_index().sort_values(["treatment", "metric"]).pivot(index="metric", columns=["treatment", "ever_available"]).drop("Author N Followers").astype(int).to_latex(column_format="l | r r | r r", sparsify=True, formatters=[lambda x: f"{x:,}"] * 5)
+    return
 
 
 @app.cell
-def __(METRICS, Path, control_configs, defaultdict, json, pd, te, tqdm):
+def __(tid_missingness):
+    tid_missingness[tid_missingness["treatment"]][["treatment","metric","partial_availability"]].value_counts(dropna=False).reset_index().sort_values(["treatment", "metric"]).pivot(index="metric", columns=["treatment", "partial_availability"]).drop("Author N Followers").fillna(0).astype(int).to_latex(column_format="l | r r | r r", sparsify=True, formatters=[lambda x: f"{x:,}"] * 5)
+    return
+
+
+@app.cell
+def __(
+    all_used_tids,
+    np,
+    pd,
+    potentially_missing_metrics,
+    read_and_filter_tid,
+    tqdm,
+    treated_used_tids,
+):
+    # Check which metrics were present, present but dropped, or never returned.
+    tid_missingness = []
+
+
+    for _tid in tqdm(all_used_tids):
+        pre, post, full = read_and_filter_tid(_tid)
+
+        for _metric in potentially_missing_metrics:
+            partial_availability = None
+
+            # Group calculated metrics together
+            _metrics = [_metric, _metric.replace("calculated_", "")]
+
+            _present_metrics = np.unique([m for m in _metrics if m in full.columns])
+
+            # Check if metric was ever present
+            if (
+                len(_present_metrics) > 0
+                and full[_present_metrics].notna().any().any()
+            ):
+                # save the fact that the metric was fully available
+                ever_available = "Available"
+                
+
+                # If this is a control sample:
+                if pre is None:
+                    partial_availability = None
+                    
+                else:
+                    
+                    # Log if metric available in all observations after slap
+                    if any([post[m].notna().all() for m in _present_metrics]):
+                        partial_availability = "Fully Available"
+
+                    # Log if available in any observations after slap
+                    elif (
+                        post[_present_metrics].notna().any().any() 
+                        and pre[_present_metrics].notna().any().any()
+                    ):
+                        partial_availability = "Dropped Post Treatment"
+
+                    # Log if available prior to slap
+                    elif pre[_present_metrics].notna().any().any():
+                        partial_availability = "Dropped Pre Treatment"
+
+                    # If none of prior conditions met, must be that post was only
+                    # available 48 h after slap
+                    else:
+                        partial_availability = "Only Available Post Treatment"
+            else:
+                # Save the fact that metric was never present            
+                ever_available = "Unavailable"
+                partial_availability = "Unavailable" if pre is not None else None
+
+            tid_missingness.append(pd.Series({
+                "treatment": _tid in treated_used_tids,
+                "tid": _tid,
+                "metric": _metric.replace("calculated_", "").replace("_", " ").title(),
+                "ever_available": ever_available,
+                "partial_availability": partial_availability
+            }))
+
+                    
+                    
+    tid_missingness = pd.DataFrame(tid_missingness)
+    return (
+        ever_available,
+        full,
+        partial_availability,
+        post,
+        pre,
+        tid_missingness,
+    )
+
+
+@app.cell
+def __(METRICS, Path, json, pd, te):
     # Read metadata from step C
     with open(
         "cn_effect_intermediate_prod/c_find_controls/c_find_control_metadata.json"
     ) as f:
         step_c_metadata = json.load(f)
 
-    # Get complete list of posts that were dropped from at least one metric )
+    # Get complete list of posts that were dropped from at least one metric
     treated_used_tids = set(step_c_metadata["used_tweet_ids"])
 
     #Make sure we actually estimated te and could solve convex problem
@@ -907,312 +996,82 @@ def __(METRICS, Path, control_configs, defaultdict, json, pd, te, tqdm):
         dtype=str
     )["tweet_id"].unique())
 
+    # Get treated tweet ids whose convex problem couldn't be solved
+    unsolvable = [t for t in step_c_metadata["used_tweet_ids"] if t not in treated_used_tids]
+
     # Find IDs that were dropped
     failed_treated_tids = set(
         step_c_metadata["tids_without_pre_break_data"] 
         + step_c_metadata["tids_without_post_break_data"]
         + step_c_metadata["tweets_without_controls"]
         + step_c_metadata["not_enough_metrics"]
-        + [t for t in step_c_metadata["used_tweet_ids"] if t not in treated_used_tids]
+        + unsolvable
     )
 
-
+    # Drop these TIDs from the "complete" set
     all_used_tids = all_used_tids - failed_treated_tids
 
+    # Any tids that were used but were not treated were in the control pool
     control_tids = all_used_tids - treated_used_tids
 
-    treatment_missing_metrics_by_tid = defaultdict(list)
-    treatment_missing_metrics_by_metric = defaultdict(list)
+    # metrics to check for missingness
+    potentially_missing_metrics = [m for m in METRICS if "root_tweet" not in m]
 
-    for _metric in METRICS + ["author_n_followers"]:
-        # Make sure metric is one we specifically count
-        if f"tweets_using_{_metric}" not in step_c_metadata.keys():
-            print(_metric, "not used")
-            continue
-
-        used_for_metric = step_c_metadata[f"tweets_using_{_metric}"]
-        missing_tids = treated_used_tids - set(used_for_metric)
-        for _tid in missing_tids:
-            treatment_missing_metrics_by_tid[_tid] += [_metric]
-            treatment_missing_metrics_by_metric[_metric] += [_tid]
-
-
-    control_present_tids_by_tid = defaultdict(set)
-    control_present_tids_by_metric = defaultdict(set)
-
-    for _tid in tqdm(list(treated_used_tids)):
-        assert len(control_configs[_tid]) == 1
-        _tid_metadata = control_configs[_tid][0]
-
-        for _metric in _tid_metadata["metrics_present_for_tweet"]:
-            _control_tids_used = _tid_metadata["control_tweet_ids"]
-            control_present_tids_by_metric[_metric] = \
-                control_present_tids_by_metric[_metric].union(
-                    _control_tids_used 
-                )
-            for _control_tid in _control_tids_used:
-                control_present_tids_by_tid[_control_tid] = \
-                    control_present_tids_by_tid[_control_tid].union([_metric])
-
-    all_metrics = set(METRICS + ["author_n_followers"])
-
-    control_missing_metrics_by_tid = {
-        _tid: all_metrics.difference(_metrics)
-        for _tid, _metrics in control_present_tids_by_tid.items()
-    }
-
-    control_missing_metrics_by_metric = {
-        m: control_tids.difference(_tids)
-        for m, _tids in control_present_tids_by_metric.items()
-    }
     return (
-        all_metrics,
         all_used_tids,
-        control_missing_metrics_by_metric,
-        control_missing_metrics_by_tid,
-        control_present_tids_by_metric,
-        control_present_tids_by_tid,
         control_tids,
         f,
         failed_treated_tids,
-        missing_tids,
+        potentially_missing_metrics,
         step_c_metadata,
         treated_used_tids,
-        treatment_missing_metrics_by_metric,
-        treatment_missing_metrics_by_tid,
-        used_for_metric,
+        unsolvable,
     )
 
 
 @app.cell
-def __(dfs):
-    dfs.transpose()
-    return
-
-
-@app.cell
-def __(
-    control_fully_present,
-    control_missing_metrics_by_tid,
-    control_never_present,
-    control_partially_present,
-    control_tids,
-    pd,
-    treated_fully_present,
-    treated_never_present,
-    treated_partially_present,
-    treated_used_tids,
-    treatment_missing_metrics_by_tid,
-):
-    post_subsets = [
-        ("treated", 
-         (
-             len(treated_used_tids),
-             treatment_missing_metrics_by_tid, 
-          treated_fully_present,
-          treated_partially_present, 
-          treated_never_present)
-        ),
-        ("control", 
-         (
-             len(control_tids),
-             control_missing_metrics_by_tid, 
-          control_fully_present, 
-          control_partially_present, 
-          control_never_present)
-        ),
-    ]
-
-    dfs = []
-    pcts_dfs = []
-    for post_subset_name, \
-        (total_subset_size, missing_metrics_by_tid, fully_present, partially_present, never_present) \
-    in post_subsets:
-
-        subset_df = pd.concat([
-                pd.Series(
-                    {
-                        metric: len(tids) + total_subset_size - len(missing_metrics_by_tid)
-                        for metric, tids in fully_present.items()
-                    }, 
-                    name=(post_subset_name,"Full")
-                    ),
-                pd.Series(
-                    {
-                        metric: len(tids)
-                        for metric, tids in partially_present.items()
-                    }, 
-                    name=(post_subset_name,"Partial")
-                    ),
-                pd.Series(
-                    {
-                        metric: len(tids)
-                        for metric, tids in never_present.items()
-                    }, 
-                    name=(post_subset_name,"Never")
-                    ),
-        ], axis=1)
-
-        subset_df[(post_subset_name,"Total")] = subset_df.fillna(0).sum(axis=1)
-
-        # percents_df = subset_df.copy() / subset_df[(post_subset_name,"Total")]
-
-        dfs.append(subset_df)
-        # pcts_dfs.append(percents_df)
-
-    dfs = pd.concat(dfs, axis=1)
-    # pcts_dfs = pd.concat(pcts_dfs, axis=1)
-    return (
-        dfs,
-        fully_present,
-        missing_metrics_by_tid,
-        never_present,
-        partially_present,
-        pcts_dfs,
-        post_subset_name,
-        post_subsets,
-        subset_df,
-        total_subset_size,
-    )
-
-
-@app.cell
-def __(
-    METRICS,
-    control_missing_metrics_by_tid,
-    defaultdict,
-    read_and_filter_tid,
-    tqdm,
-    treatment_missing_metrics_by_tid,
-):
-    def check_tids_for_data_availability(missing_metrics_by_tid):
-
-        # Check which metrics were present, present but dropped, and never returned.
-        never_present = defaultdict(list)
-        partially_present = defaultdict(list)
-        fully_present = defaultdict(list)
-
-        # Read all of them
-        for _tid, _missing_metrics in tqdm(missing_metrics_by_tid.items()):
-            pre, post, pre_and_post = read_and_filter_tid(_tid)
-
-            # Check if they have each metric column:
-            for _metric in METRICS + ["author_n_followers"]:
-                _metric_was_ever_present = (
-                    _metric in pre_and_post.columns 
-                    and pre_and_post[_metric].notna().any()
-                )
-                if not _metric_was_ever_present:
-                    # Save the fact that metric was never present
-                    never_present[_metric].append(_tid)
-
-                else:    
-                    if _metric in _missing_metrics:
-                        # Save the fact that the metric was available at one point
-                        partially_present[_metric].append(_tid)
-                    else: 
-                        # save the fact that the metric was fully available
-                        fully_present[_metric].append(_tid)
-
-        return fully_present, partially_present, never_present
-
-    (
-        control_fully_present, 
-        control_partially_present, 
-        control_never_present
-    ) = check_tids_for_data_availability(control_missing_metrics_by_tid)
-
-    (
-        treated_fully_present, 
-        treated_partially_present,
-        treated_never_present
-    ) = check_tids_for_data_availability(treatment_missing_metrics_by_tid)
-    return (
-        check_tids_for_data_availability,
-        control_fully_present,
-        control_never_present,
-        control_partially_present,
-        treated_fully_present,
-        treated_never_present,
-        treated_partially_present,
-    )
-
-
-@app.cell
-def __(METRICS, Path, pd):
+def __(Path, pd, potentially_missing_metrics):
     def read_and_filter_tid(_tid):
-        _tid_data = pd.read_parquet(
+        _full_data = pd.read_parquet(
             Path("cn_effect_intermediate_prod") / "b_merged" / f"{_tid}.parquet"
         )
 
+        _full_data = _full_data[
+                ["tweet_id", "note_0_time_since_first_crh"]
+                + [m for m in potentially_missing_metrics if m in _full_data.columns]
+                + [m.replace("calculated_", "") for m in potentially_missing_metrics if m.replace("calculated_", "") in _full_data.columns and "calculated" in m]
+            ].copy()
+
         is_control = (
-            "note_0_time_since_first_crh" not in _tid_data.columns 
-            or _tid_data["note_0_time_since_first_crh"].isna().all()
+            "note_0_time_since_first_crh" not in _full_data.columns 
+            or _full_data["note_0_time_since_first_crh"].isna().all()
         )
         if is_control:
-            return None, None, _tid_data
+            return None, None, _full_data
         else:
-            # Filter to 12 hours prior and 48 hours after
-            _tid_data = _tid_data[
-                (_tid_data["note_0_time_since_first_crh"] <= pd.to_timedelta("48h"))
-                & (_tid_data["note_0_time_since_first_crh"] >= pd.to_timedelta("-12h"))
-            ]
-            _tid_data = _tid_data[
-                ["tweet_id", "note_0_time_since_first_crh"]
-                + [m for m in METRICS if m in _tid_data.columns]
+
+            _pre_slap = _full_data[
+                _full_data["note_0_time_since_first_crh"] < pd.Timedelta(0)
             ]
 
-            # Define groups of metrics that tend to be missing together
-            _METRICS_GROUPS = {
-                "api": ["replies", "retweets", "likes", "impressions"],
-                "structural": ["rt_cascade_width", "rt_cascade_depth", "rt_cascade_wiener_index"]
-            }
-
-            for _metric_group in ["api", "structural"]:
-
-                # Create accumulators
-                _tid_data[f"all_{_metric_group}_present"] = True
-                _tid_data[f"any_{_metric_group}_present"] = False
-                group_entirely_missing = True
-
-                # Iterate through metrics in groupos
-                for _metric in _METRICS_GROUPS[_metric_group]:
-                    if _metric not in _tid_data.columns:
-                        continue
-                    else:
-                        group_entirely_missing = False
-                        _tid_data[f"all_{_metric_group}_present"] = (
-                            _tid_data[f"all_{_metric_group}_present"] & _tid_data[_metric].notna()
-                        )
-                        _tid_data[f"any_{_metric_group}_present"] = (
-                            _tid_data[f"any_{_metric_group}_present"] | _tid_data[_metric].notna()
-                        )
-                if group_entirely_missing:
-                    _tid_data[f"all_{_metric_group}_present"] = False
-
-                # Are there any rows with one metric (out of the group) but not others?
-                _tid_data[f"partially_missing_{_metric_group}"] = (
-                    _tid_data[f"any_{_metric_group}_present"] 
-                    & ~_tid_data[f"all_{_metric_group}_present"]
-                )
-
-
-            _pre_slap = _tid_data[
-                _tid_data["note_0_time_since_first_crh"] < pd.Timedelta(0)
+            _post_slap = _full_data[
+                _full_data["note_0_time_since_first_crh"] >= pd.Timedelta(0)
             ]
 
-            _post_slap = _tid_data[
-                _tid_data["note_0_time_since_first_crh"] >= pd.Timedelta(0)
+            # Filter to only 48 hours after
+            _post_slap = _post_slap[
+                _post_slap["note_0_time_since_first_crh"] <= pd.to_timedelta("48h")
             ]
 
-            return _pre_slap, _post_slap, _tid_data
+            return _pre_slap, _post_slap, _full_data
     return (read_and_filter_tid,)
 
 
 @app.cell
-def __():
-    # Of the X treated posts that we consider, x are not matched on the full dataset.
-    return
+def __(potentially_missing_metrics, te):
+    last_48 = te[te["note_0_hours_since_first_crh"] == 48]
+    last_48[[f"te_{m}" for m in potentially_missing_metrics if m != "author_n_followers"]].notna().sum()
+    return (last_48,)
 
 
 @app.cell
@@ -1353,9 +1212,6 @@ def __(BIG_METRICS, CONFIDENCE, METRICS, final, first, gaussian_ci, pd):
                     }
                 )
         return pd.DataFrame(summaries)
-
-
-
     return (relative_change_table,)
 
 
