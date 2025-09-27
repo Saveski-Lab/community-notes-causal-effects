@@ -1,0 +1,17 @@
+# Make sure to Track logs
+!cn_effect_intermediate_dev/**/*.log
+!cn_effect_intermediate_prod/**/*.log
+
+# Main data files
+*.parquet
+*.json.gz
+
+# PyCharm
+.idea/
+
+# os
+*.DS_Store
+
+# Python byte‑code
+*.pyc
+__pycache__/
