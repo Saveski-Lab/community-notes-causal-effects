@@ -29,7 +29,7 @@ If you use this code in your research, please cite the following paper:
 ```
 @article{
     doi:10.1073/pnas.2503413122,
-    author = {Isaac Slaughter  and Axel Peytavin  and Johan Ugander  and Martin Saveski},
+    author = {Isaac Slaughter and Axel Peytavin and Johan Ugander and Martin Saveski},
     title = {Community notes reduce engagement with and diffusion of false information online},
     journal = {Proceedings of the National Academy of Sciences},
     volume = {122},
