@@ -1,1 +1,1 @@
-Place data in this directory once downloaded.
+Place data in this directory once downloaded and unzipped.

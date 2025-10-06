@@ -24,6 +24,12 @@ The following scripts contain code for calculating the statistics and artifacts 
 * `src/analysis/plot_final_figures.py`
 * `src/analysis/gather_cate_data.py`
 
+
+## Notes
+* The code was designed to run on single high-memory machine. It took multiple days to run the main pipeline, and will take longer for the runs discussed in the supplementary information.
+* Each script in the `pipeline` folder has a parameter for specifying the number of threads/workers/processes to use, which you can modify for your setting. 
+* There are some sources of stochasticity in the pipeline—for example there are non-unique solutions to some of the quadratic programs that are solved when constructing synthetic controls. This can lead to small differences in results between runs. (We observed a maximum relative change of 2% when rerunning the pipeline.) Please feel free to reach out to the corresponding author with any questions.
+
 ## Citation
 If you use this code in your research, please cite the following paper:
 ```
